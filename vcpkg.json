@@ -1,0 +1,30 @@
+{
+  "name": "realmap-global-80",
+  "version-string": "1.0.0",
+  "description": "Correct dependencies for TFS 1.2 / 8.0",
+  "builtin-baseline": "0d9d4684352ba8de70bdf251c6fc9a3c464fa12b",
+  "dependencies": [
+    {
+      "name": "boost",
+      "default-features": true
+    },
+    {
+      "name": "lua"
+    },
+    {
+      "name": "libmysql"
+    },
+    {
+      "name": "openssl"
+    },
+    {
+      "name": "pugixml"
+    },
+    {
+      "name": "fmt"
+    },
+    {
+      "name": "mpir"
+    }
+  ]
+}

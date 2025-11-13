@@ -29,10 +29,10 @@ extern ConfigManager g_config;
 Ban g_bans;
 
 ServiceManager::ServiceManager():
-	death_timer(io_service),
-	running(false)
+    death_timer(io_service),
+    running(false)
 {
-	//
+    //
 }
 
 ServiceManager::~ServiceManager()
@@ -42,14 +42,14 @@ ServiceManager::~ServiceManager()
 
 void ServiceManager::die()
 {
-	io_service.stop();
+    io_service.stop();
 }
 
 void ServiceManager::run()
 {
-	assert(!running);
-	running = true;
-	io_service.run();
+    assert(!running);
+    running = true;
+    io_service.run();
 }
 
 void ServiceManager::stop()
@@ -60,13 +60,13 @@ void ServiceManager::stop()
 
 	running = false;
 
-	for (auto& servicePortIt : acceptors) {
-		try {
-			io_service.post(std::bind(&ServicePort::onStopServer, servicePortIt.second));
-		} catch (boost::system::system_error& e) {
-			std::cout << "[ServiceManager::stop] Network Error: " << e.what() << std::endl;
-		}
-	}
+    for (auto& servicePortIt : acceptors) {
+        try {
+            boost::asio::post(io_service, std::bind(&ServicePort::onStopServer, servicePortIt.second));
+        } catch (boost::system::system_error& e) {
+            std::cout << "[ServiceManager::stop] Network Error: " << e.what() << std::endl;
+        }
+    }
 
 	acceptors.clear();
 
@@ -74,12 +74,12 @@ void ServiceManager::stop()
 	death_timer.async_wait(std::bind(&ServiceManager::die, this));
 }
 
-ServicePort::ServicePort(boost::asio::io_service& io_service) :
-	io_service(io_service),
-	serverPort(0),
-	pendingStart(false)
+ServicePort::ServicePort(boost::asio::io_context& io_service) :
+    io_service(io_service),
+    serverPort(0),
+    pendingStart(false)
 {
-	//
+    //
 }
 
 ServicePort::~ServicePort()
@@ -180,13 +180,19 @@ void ServicePort::open(uint16_t port)
 	pendingStart = false;
 
 	try {
-		if (g_config.getBoolean(ConfigManager::BIND_ONLY_GLOBAL_ADDRESS)) {
-			acceptor.reset(new boost::asio::ip::tcp::acceptor(io_service, boost::asio::ip::tcp::endpoint(
-			            boost::asio::ip::address(boost::asio::ip::address_v4::from_string(g_config.getString(ConfigManager::IP))), serverPort)));
-		} else {
-			acceptor.reset(new boost::asio::ip::tcp::acceptor(io_service, boost::asio::ip::tcp::endpoint(
-			            boost::asio::ip::address(boost::asio::ip::address_v4(INADDR_ANY)), serverPort)));
-		}
+        if (g_config.getBoolean(ConfigManager::BIND_ONLY_GLOBAL_ADDRESS)) {
+            acceptor.reset(new boost::asio::ip::tcp::acceptor(
+                io_service,
+                boost::asio::ip::tcp::endpoint(
+                    boost::asio::ip::make_address(g_config.getString(ConfigManager::IP)),
+                    serverPort)));
+        } else {
+            acceptor.reset(new boost::asio::ip::tcp::acceptor(
+                io_service,
+                boost::asio::ip::tcp::endpoint(
+                    boost::asio::ip::address(boost::asio::ip::address_v4::any()),
+                    serverPort)));
+        }
 
 		acceptor->set_option(boost::asio::ip::tcp::no_delay(true));
 

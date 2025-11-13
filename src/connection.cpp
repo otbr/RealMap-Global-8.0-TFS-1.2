@@ -28,11 +28,11 @@
 
 extern ConfigManager g_config;
 
-Connection_ptr ConnectionManager::createConnection(boost::asio::io_service& io_service, ConstServicePort_ptr servicePort)
+Connection_ptr ConnectionManager::createConnection(boost::asio::io_context& io_service, ConstServicePort_ptr servicePort)
 {
 	std::lock_guard<std::mutex> lockClass(connectionManagerLock);
 
-	auto connection = std::make_shared<Connection>(io_service, servicePort);
+    auto connection = std::make_shared<Connection>(io_service, servicePort);
 	connections.insert(connection);
 	return connection;
 }
@@ -260,7 +260,7 @@ uint32_t Connection::getIP()
 		return 0;
 	}
 
-	return htonl(endpoint.address().to_v4().to_ulong());
+    return htonl(static_cast<uint32_t>(endpoint.address().to_v4().to_uint()));
 }
 
 void Connection::onWriteOperation(const boost::system::error_code& error)

@@ -22,7 +22,7 @@
 #include "configmanager.h"
 #include "database.h"
 
-#include <errmsg.h>
+#include <mysql/errmsg.h>
 
 extern ConfigManager g_config;
 
@@ -48,9 +48,9 @@ bool Database::connect()
 		return false;
 	}
 
-	// automatic reconnect
-	my_bool reconnect = true;
-	mysql_options(handle, MYSQL_OPT_RECONNECT, &reconnect);
+    // automatic reconnect
+    bool reconnect = true;
+    mysql_options(handle, MYSQL_OPT_RECONNECT, &reconnect);
 
 	// connects to database
 	if (!mysql_real_connect(handle, g_config.getString(ConfigManager::MYSQL_HOST).c_str(), g_config.getString(ConfigManager::MYSQL_USER).c_str(), g_config.getString(ConfigManager::MYSQL_PASS).c_str(), g_config.getString(ConfigManager::MYSQL_DB).c_str(), g_config.getNumber(ConfigManager::SQL_PORT), g_config.getString(ConfigManager::MYSQL_SOCK).c_str(), 0)) {

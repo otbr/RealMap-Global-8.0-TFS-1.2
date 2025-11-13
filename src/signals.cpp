@@ -58,8 +58,8 @@ extern LuaEnvironment g_luaEnvironment;
 
 using ErrorCode = boost::system::error_code;
 
-Signals::Signals(boost::asio::io_service& service) :
-	set(service)
+Signals::Signals(boost::asio::io_context& service) :
+    set(service)
 {
 	set.add(SIGINT);
 	set.add(SIGTERM);

@@ -3749,8 +3749,9 @@ const luaL_Reg LuaScriptInterface::luaBitReg[] = {
 
 int LuaScriptInterface::luaBitNot(lua_State* L)
 {
-	lua_pushnumber(L, ~getNumber<uint32_t>(L, -1));
-	return 1;
+    uint32_t v = getNumber<uint32_t>(L, -1);
+    lua_pushinteger(L, static_cast<lua_Integer>(~v & 0xFFFFFFFFu));
+    return 1;
 }
 
 #define MULTIOP(name, op) \
