@@ -20,7 +20,7 @@
 #ifndef FS_RSA_H_C4E277DA8E884B578DDBF0566F504E91
 #define FS_RSA_H_C4E277DA8E884B578DDBF0566F504E91
 
-#include <mpir.h>
+#include <gmp.h>
 
 class RSA
 {
